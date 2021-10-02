@@ -1,0 +1,18 @@
+@RestController@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode =
+ScopedProxyMode.TARGET_CLASS)
+public class AuthController {
+private static int ATTEMPTS_LEFT = 5;
+@PostMapping("/api/v1/validate-code")
+public ResponseEntity <Object> validateCodeLegacy(CodeValidationRequest
+codeValidationRequest) {
+String code = codeValidationRequest.getCode();
+boolean isValidCode = CodeValidationManager.validateCode(code);
+if (!isValidCode) {
+Map<String, Object>responseAttributes = new HashMap<>();
+responseAttributes.put("message", "The supplied token is invalid");
+return new ResponseEntity<>(responseAttributes, HttpStatus.UNAUTHORIZED);
+}
+CodeValidationManager.setAuthSession();
+return new ResponseEntity<>(null, HttpStatus.OK);
+}
+}
